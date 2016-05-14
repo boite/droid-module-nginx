@@ -1,0 +1,10 @@
+---
+project:
+    name: "linkorb/nginx"
+    description: "Setup NGINX"
+
+variables:
+    nginx_package_name: "nginx" # name of the package to install
+    
+tasks:
+    - "apt-get:install": package="{{nginx_package_name}}"
