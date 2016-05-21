@@ -3,8 +3,109 @@ project:
     name: "linkorb/nginx"
     description: "Setup NGINX"
 
-variables:
-    nginx_package_name: "nginx" # name of the package to install
+arguments:
+    user:
+        description: "System user as which the nginx process will run"
+        default:
+            debian: "www-data"
+            redhat: "nginx"
+        required: false
+        example: ~
     
+        
+    
+variables:
+    nginx_user: "www-data"
+    nginx_package_name: "nginx" # name of the package to install
+
+    nginx_worker_processes: "4"
+    nginx_worker_connections: "1024"
+    nginx_multi_accept: "off"
+
+    nginx_error_log: "/var/log/nginx/error.log warn"
+    nginx_access_log: "/var/log/nginx/access.log main buffer=16k"
+
+    nginx_sendfile: "on"
+    nginx_tcp_nopush: "on"
+    nginx_tcp_nodelay: "on"
+
+    nginx_keepalive_timeout: "65"
+    nginx_keepalive_requests: "100"
+
+    nginx_client_max_body_size: "64m"
+
+    nginx_server_names_hash_bucket_size: "64"
+
+    nginx_proxy_cache_path: ""
+
+    nginx_extra_conf_options: |
+        include /etc/nginx/main.d/*.conf;
+        
+    # Example extra main options, used within the main nginx's context:
+    #   nginx_extra_conf_options: |
+    #     env VARIABLE;
+    #     include /etc/nginx/main.d/*.conf;
+
+    nginx_extra_http_options: ""
+    # Example extra http options, printed inside the main server http config:
+    #    nginx_extra_http_options: |
+    #      proxy_buffering    off;
+    #      proxy_set_header   X-Real-IP $remote_addr;
+    #      proxy_set_header   X-Scheme $scheme;
+    #      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+    #      proxy_set_header   Host $http_host;
+
+    nginx_remove_default_vhost: false
+    nginx_vhosts:
+      - listen: "80 default_server" # default: "80 default_server"
+        server_name: "my.example.com" # default: N/A
+        root: "/var/www/example.com" # default: N/A
+        index: "index.php" # default: "index.html index.htm"
+        extra_parameters: |
+            location / {
+                proxy_pass http://myapp1;
+            }
+
+    # Example vhost below, showing all available options:
+    # - listen: "80 default_server" # default: "80 default_server"
+    #   server_name: "example.com" # default: N/A
+    #   root: "/var/www/example.com" # default: N/A
+    #   index: "index.html index.htm" # default: "index.html index.htm"
+    #
+    #   # Properties that are only added if defined:
+    #   error_page: ""
+    #   access_log: ""
+    #   error_log: ""
+    #   extra_parameters: "" # Can be used to add extra config blocks (multiline).
+
+    nginx_upstreams:
+      - name: myapp1
+        xstrategy: "round_robin" # "least_conn", etc.
+        servers:
+          - "10.129.15.52"
+          - "10.129.15.54 weight=3"
+    
+    # Debian
+    root_group: root
+    nginx_conf_path: /etc/nginx/conf.d
+    nginx_conf_file_path: /etc/nginx/nginx.conf
+    nginx_mime_file_path: /etc/nginx/mime.types
+    nginx_pidfile: /run/nginx.pid
+    nginx_vhost_path: /etc/nginx/sites-enabled
+    nginx_default_vhost_path: /etc/nginx/sites-enabled/default
+    __nginx_user: "www-data"
+
 tasks:
-    - "apt-get:install": package="{{nginx_package_name}}"
+    - name: "Installing nginx package"
+      "apt-get:install": package="{{nginx_package_name}}"
+    - name: "Create config"
+      "fs:copy":
+          src: !modules/droid/nginx/assets/nginx.conf
+          dest: /etc/nginx/nginx.conf
+      trigger: "Restart nginx"
+triggers:
+    - name: "Reload nginx"
+      "service:reload": name="nginx"
+    - name: "Restart nginx"
+      "service:restart": name="nginx"
+        
