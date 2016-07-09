@@ -1,0 +1,43 @@
+# ************************************
+# {{{ item.name }}}
+# ************************************
+
+server {
+
+    server_name {{{ item.servername }}};
+
+{{#each item.listen}}
+    listen {{{ . }}};
+{{/each}}
+
+{{#if item.root }}
+    root {{{ item.root }}};
+{{/if}}
+
+{{#if item.index}}
+    index {{{ item.index }}};
+{{else}}
+    index index.html index.htm;
+{{/if}}
+
+{{#if item.error_page}}
+    error_page {{{ item.error_page }}};
+{{/if}}
+
+{{#if item.access_log}}
+    access_log {{{ item.access_log }}};
+{{/if}}
+
+{{#if item.error_log}}
+    error_log {{{ item.error_log }}} error;
+{{/if}}
+
+{{#if item.return}}
+    return {{{ item.return }}};
+{{/if}}
+
+{{#if item.extra_options}}
+    {{{ item.extra_options }}}
+{{/if}}
+
+}
