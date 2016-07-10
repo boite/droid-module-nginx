@@ -54,6 +54,8 @@ variables:
         #   https_private_key: "secure/example.com.key.pem"
         #   # - HTTPS Server certificate
         #   https_certificate: "secure/example.com.cert.pem"
+        #   # - Certificate Authority certificate for Client Authentication
+        #   auth_cacert: "secure/example.com.cacert.pem"
     nginx_upstreams: ~
         # Example upstream
         # -
@@ -85,6 +87,13 @@ tasks:
           src: "!{{ mod_path }}/assets/upstream.conf.template"
           dest: "/etc/nginx/conf.d/upstream-{{ item.name }}.conf"
       with_items: nginx_upstreams
+    -
+      name: "Copy Client Authentication CA Cert"
+      command: "fs:copy"
+      arguments:
+          src: "!{{ item.auth_cacert }}"
+          dest: "/etc/ssl/certs/{{ item.name }}.cacert.pem"
+      with_items: nginx_vhosts
     -
       name: "Copy HTTPS private key"
       command: "fs:copy"
