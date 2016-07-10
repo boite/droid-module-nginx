@@ -34,8 +34,8 @@ variables:
         # Example vhost below, showing all available options:
         # -
         #   listen:
-        #       - "80"
-        #       - "[::]:80"
+        #       - "443 ssl"
+        #       - "[::]:443 ssl"
         #   name: "example.com"           # A name for the vhost
         #   servername: "example.com"     # The server name
         #   index: "index.html index.htm" # default: "index.html index.htm"
@@ -49,6 +49,11 @@ variables:
         #       location / {
         #           proxy_pass http://myapp1;
         #       }
+        #   # variables not directly used in the vhost config
+        #   # - HTTPS Server private key
+        #   https_private_key: "secure/example.com.key.pem"
+        #   # - HTTPS Server certificate
+        #   https_certificate: "secure/example.com.cert.pem"
     nginx_upstreams: ~
         # Example upstream
         # -
@@ -80,6 +85,20 @@ tasks:
           src: "!{{ mod_path }}/assets/upstream.conf.template"
           dest: "/etc/nginx/conf.d/upstream-{{ item.name }}.conf"
       with_items: nginx_upstreams
+    -
+      name: "Copy HTTPS private key"
+      command: "fs:copy"
+      arguments:
+          src: "!{{ item.https_private_key }}"
+          dest: "/etc/ssl/private/{{ item.name }}.key"
+      with_items: nginx_vhosts
+    -
+      name: "Copy HTTPS certificate"
+      command: "fs:copy"
+      arguments:
+          src: "!{{ item.https_certificate }}"
+          dest: "/etc/ssl/certs/{{ item.name }}.crt.pem"
+      with_items: nginx_vhosts
     -
       name: "Create vhosts"
       command: "fs:copy"

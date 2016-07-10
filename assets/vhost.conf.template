@@ -10,6 +10,11 @@ server {
     listen {{{ . }}};
 {{/each}}
 
+    # HTTPS
+    ssl_certificate /etc/ssl/certs/{{{ item.name }}}.crt.pem;
+    ssl_certificate_key /etc/ssl/private/{{{ item.name }}}.key;
+    proxy_set_header Host $host;
+
 {{#if item.root }}
     root {{{ item.root }}};
 {{/if}}
