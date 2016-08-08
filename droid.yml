@@ -1,111 +1,128 @@
 ---
 project:
-    name: "linkorb/nginx"
+    name: "droid/nginx"
     description: "Setup NGINX"
 
-arguments:
-    user:
-        description: "System user as which the nginx process will run"
-        default:
-            debian: "www-data"
-            redhat: "nginx"
-        required: false
-        example: ~
-    
-        
-    
 variables:
-    nginx_user: "www-data"
-    nginx_package_name: "nginx" # name of the package to install
-
-    nginx_worker_processes: "4"
-    nginx_worker_connections: "1024"
-    nginx_multi_accept: "off"
-
-    nginx_error_log: "/var/log/nginx/error.log warn"
-    nginx_access_log: "/var/log/nginx/access.log main buffer=16k"
-
-    nginx_sendfile: "on"
-    nginx_tcp_nopush: "on"
-    nginx_tcp_nodelay: "on"
-
-    nginx_keepalive_timeout: "65"
-    nginx_keepalive_requests: "100"
-
-    nginx_client_max_body_size: "64m"
-
-    nginx_server_names_hash_bucket_size: "64"
-
-    nginx_proxy_cache_path: ""
-
-    nginx_extra_conf_options: |
-        include /etc/nginx/main.d/*.conf;
-        
-    # Example extra main options, used within the main nginx's context:
-    #   nginx_extra_conf_options: |
-    #     env VARIABLE;
-    #     include /etc/nginx/main.d/*.conf;
-
-    nginx_extra_http_options: ""
-    # Example extra http options, printed inside the main server http config:
-    #    nginx_extra_http_options: |
-    #      proxy_buffering    off;
-    #      proxy_set_header   X-Real-IP $remote_addr;
-    #      proxy_set_header   X-Scheme $scheme;
-    #      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-    #      proxy_set_header   Host $http_host;
-
-    nginx_remove_default_vhost: false
-    nginx_vhosts:
-      - listen: "80 default_server" # default: "80 default_server"
-        server_name: "my.example.com" # default: N/A
-        root: "/var/www/example.com" # default: N/A
-        index: "index.php" # default: "index.html index.htm"
-        extra_parameters: |
-            location / {
-                proxy_pass http://myapp1;
-            }
-
-    # Example vhost below, showing all available options:
-    # - listen: "80 default_server" # default: "80 default_server"
-    #   server_name: "example.com" # default: N/A
-    #   root: "/var/www/example.com" # default: N/A
-    #   index: "index.html index.htm" # default: "index.html index.htm"
-    #
-    #   # Properties that are only added if defined:
-    #   error_page: ""
-    #   access_log: ""
-    #   error_log: ""
-    #   extra_parameters: "" # Can be used to add extra config blocks (multiline).
-
-    nginx_upstreams:
-      - name: myapp1
-        xstrategy: "round_robin" # "least_conn", etc.
-        servers:
-          - "10.129.15.52"
-          - "10.129.15.54 weight=3"
-    
-    # Debian
-    root_group: root
-    nginx_conf_path: /etc/nginx/conf.d
-    nginx_conf_file_path: /etc/nginx/nginx.conf
-    nginx_mime_file_path: /etc/nginx/mime.types
-    nginx_pidfile: /run/nginx.pid
-    nginx_vhost_path: /etc/nginx/sites-enabled
-    nginx_default_vhost_path: /etc/nginx/sites-enabled/default
-    __nginx_user: "www-data"
+    nginx:
+        worker_processes: "4"
+        error_log: "/var/log/nginx/error.log warn"
+        # Example extra main options, used within the main nginx's context:
+        # extra_options: |
+        #     env VARIABLE;
+        #     include /etc/nginx/main.d/*.conf;
+        events:
+            worker_connections: "1024"
+            multi_accept: "off"
+        http:
+            server_names_hash_bucket_size: "64"
+            client_max_body_size: "64m"
+            access_log: "/var/log/nginx/access.log main buffer=16k"
+            sendfile: "on"
+            tcp_nopush: "on"
+            tcp_nodelay: "on"
+            keepalive_timeout: "65"
+            keepalive_requests: "100"
+            proxy_cache_path: ""
+            extra_options: |
+                proxy_buffering  off;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Scheme $scheme;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header Host $http_host;
+    nginx_vhosts: ~
+        # Example vhost below, showing all available options:
+        # -
+        #   listen:
+        #       - "443 ssl"
+        #       - "[::]:443 ssl"
+        #   name: "example.com"           # A name for the vhost
+        #   servername: "example.com"     # The server name
+        #   index: "index.html index.htm" # default: "index.html index.htm"
+        #
+        #   # Properties that are only added if defined:
+        #   root: "/var/www/example.com"
+        #   error_page: ""
+        #   access_log: ""
+        #   error_log: ""
+        #   extra_options: | # Can be used to add extra config blocks (multiline).
+        #       location / {
+        #           proxy_pass http://myapp1;
+        #       }
+        #   # variables not directly used in the vhost config
+        #   # - HTTPS Server private key
+        #   https_private_key: "secure/example.com.key.pem"
+        #   # - HTTPS Server certificate
+        #   https_certificate: "secure/example.com.cert.pem"
+        #   # - Certificate Authority certificate for Client Authentication
+        #   auth_cacert: "secure/example.com.cacert.pem"
+    nginx_upstreams: ~
+        # Example upstream
+        # -
+        #   name: myapp1
+        #   strategy: "round_robin" # "least_conn", etc.
+        #   servers:
+        #       - "10.129.15.52"
+        #       - "10.129.15.54 weight=3"
 
 tasks:
-    - name: "Installing nginx package"
-      "apt-get:install": package="{{nginx_package_name}}"
-    - name: "Create config"
-      "fs:copy":
-          src: !modules/droid/nginx/assets/nginx.conf
-          dest: /etc/nginx/nginx.conf
-      trigger: "Restart nginx"
-triggers:
-    - name: "Reload nginx"
-      "service:reload": name="nginx"
-    - name: "Restart nginx"
-      "service:restart": name="nginx"
-        
+    -
+      name: "Update packages"
+      command: "apt-get:update"
+    -
+      name: "Install nginx package"
+      command: "apt-get:install"
+      arguments:
+          package: "nginx"
+    -
+      name: "Create main config"
+      command: "fs:copy"
+      arguments:
+          src: "!{{ mod_path }}/assets/nginx.conf.template"
+          dest: "/etc/nginx/nginx.conf"
+    -
+      name: "Create upstreams"
+      command: "fs:copy"
+      arguments:
+          src: "!{{ mod_path }}/assets/upstream.conf.template"
+          dest: "/etc/nginx/conf.d/upstream-{{ item.name }}.conf"
+      with_items: nginx_upstreams
+    -
+      name: "Copy Client Authentication CA Cert"
+      command: "fs:copy"
+      arguments:
+          src: "!{{ item.auth_cacert }}"
+          dest: "/etc/ssl/certs/{{ item.name }}.cacert.pem"
+      with_items: nginx_vhosts
+    -
+      name: "Copy HTTPS private key"
+      command: "fs:copy"
+      arguments:
+          src: "!{{ item.https_private_key }}"
+          dest: "/etc/ssl/private/{{ item.name }}.key"
+      with_items: nginx_vhosts
+    -
+      name: "Copy HTTPS certificate"
+      command: "fs:copy"
+      arguments:
+          src: "!{{ item.https_certificate }}"
+          dest: "/etc/ssl/certs/{{ item.name }}.crt.pem"
+      with_items: nginx_vhosts
+    -
+      name: "Create vhosts"
+      command: "fs:copy"
+      arguments:
+          src: "!{{ mod_path }}/assets/vhost.conf.template"
+          dest: "/etc/nginx/sites-available/{{ item.name }}.conf"
+      with_items: nginx_vhosts
+    -
+      name: "Enable vhosts"
+      command: "nginx:ensite"
+      arguments:
+          site-name: "{{ item.name }}"
+      with_items: nginx_vhosts
+    -
+      name: "Reload the Nginx service"
+      command: "service:reload"
+      arguments:
+          name: "nginx"

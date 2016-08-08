@@ -1,0 +1,8 @@
+upstream {{{ item.name }}} {
+{{#each item.servers}}
+    server {{{ . }}};
+{{/each}}
+{{#if item.strategy}}
+    {{{ item.strategy }}};
+{{/if}}
+}

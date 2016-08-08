@@ -1,0 +1,53 @@
+# ************************************
+# {{{ item.name }}}
+# ************************************
+
+server {
+
+    server_name {{{ item.servername }}};
+
+{{#each item.listen}}
+    listen {{{ . }}};
+{{/each}}
+
+    # HTTPS
+    ssl_certificate /etc/ssl/certs/{{{ item.name }}}.crt.pem;
+    ssl_certificate_key /etc/ssl/private/{{{ item.name }}}.key;
+    proxy_set_header Host $host;
+
+    # Authentication by Client Certificate
+    ssl_client_certificate /etc/ssl/certs/{{{ item.name }}}.cacert.pem;
+    ssl_verify_client optional;
+    proxy_set_header X_CLIENT_CERT $ssl_client_verify;
+
+{{#if item.root }}
+    root {{{ item.root }}};
+{{/if}}
+
+{{#if item.index}}
+    index {{{ item.index }}};
+{{else}}
+    index index.html index.htm;
+{{/if}}
+
+{{#if item.error_page}}
+    error_page {{{ item.error_page }}};
+{{/if}}
+
+{{#if item.access_log}}
+    access_log {{{ item.access_log }}};
+{{/if}}
+
+{{#if item.error_log}}
+    error_log {{{ item.error_log }}} error;
+{{/if}}
+
+{{#if item.return}}
+    return {{{ item.return }}};
+{{/if}}
+
+{{#if item.extra_options}}
+    {{{ item.extra_options }}}
+{{/if}}
+
+}
