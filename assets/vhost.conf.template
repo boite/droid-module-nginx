@@ -54,4 +54,8 @@ server {
     {{{ item.extra_options }}}
 {{/if}}
 
+{{#if item.redirect_to_https}}
+    return 301 https://$host$request_uri;
+{{/if}}
+
 }

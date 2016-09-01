@@ -95,6 +95,7 @@ The steps involved are:-
               https_certificate: <string> # local path to server certificate
               auth_cacert: <string> # local path to Certificate Authority cert
                                     # for Client Authentication
+              redirect_to_https: <boolean> # Redirect to https://[servername]/uri
               root: <string>
               error_page: <string>
               access_log: <string>
