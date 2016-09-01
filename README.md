@@ -11,8 +11,8 @@ The steps involved are:-
 4. Write an upstream configuration file, for each virtual host, to
    `/etc/nginx/conf.d/`.
 5. Write a certificate authority file, for client authentication, for each
-   virtual host, to `/etc/ssl/certs/`.
-6. Write a HTTPS private key file, for each virtual host, to
+   applicable virtual host, to `/etc/ssl/certs/`.
+6. Write a HTTPS private key file, for each applicable virtual host, to
    `/etc/ssl/private/`.
 7. Write a virtual host configuration, for each virtual host, to
    `/etc/nginx/sites-available/`.
@@ -30,8 +30,6 @@ The steps involved are:-
 
 1. One virtual host configuration template is used as the basis for all of the
    virtual hosts.
-2. Each of the virtual hosts is configured for HTTPS and with client
-   certificates for (optional) authentication.
 
 
 ## Information required by the module
@@ -65,12 +63,6 @@ The steps involved are:-
               name: <string> # A name for the vhost
               servername: <string> # The server name
               index: <string> # default: "index.html index.htm"
-              https_private_key: <string> # local path to private key (used by
-                                          # droid to copy the key to the nginx
-                                          # host)
-              https_certificate: <string> # local path to server certificate
-              auth_cacert: <string> # local path to Certificate Authority cert
-                                    # for Client Authentication
 
 
 3. A list of one or more upstream configurations, as follows:-
@@ -97,6 +89,12 @@ The steps involved are:-
 
         nginx_vhosts:
             -
+              https_private_key: <string> # local path to private key (used by
+                                          # droid to copy the key to the nginx
+                                          # host)
+              https_certificate: <string> # local path to server certificate
+              auth_cacert: <string> # local path to Certificate Authority cert
+                                    # for Client Authentication
               root: <string>
               error_page: <string>
               access_log: <string>
