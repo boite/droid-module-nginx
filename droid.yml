@@ -67,9 +67,6 @@ variables:
 
 tasks:
     -
-      name: "Update packages"
-      command: "apt-get:update"
-    -
       name: "Install nginx package"
       command: "apt-get:install"
       arguments:
