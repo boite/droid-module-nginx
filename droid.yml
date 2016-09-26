@@ -69,17 +69,20 @@ tasks:
     -
       name: "Install nginx package"
       command: "apt-get:install"
+      sudo: true
       arguments:
           package: "nginx"
     -
       name: "Create main config"
       command: "fs:copy"
+      sudo: true
       arguments:
           src: "!{{ mod_path }}/assets/nginx.conf.template"
           dest: "/etc/nginx/nginx.conf"
     -
       name: "Create upstreams"
       command: "fs:copy"
+      sudo: true
       arguments:
           src: "!{{ mod_path }}/assets/upstream.conf.template"
           dest: "/etc/nginx/conf.d/upstream-{{ item.name }}.conf"
@@ -87,6 +90,7 @@ tasks:
     -
       name: "Copy Client Authentication CA Cert"
       command: "fs:copy"
+      sudo: true
       arguments:
           src: "!{{ item.auth_cacert }}"
           dest: "/etc/ssl/certs/{{ item.name }}.cacert.pem"
@@ -95,6 +99,7 @@ tasks:
     -
       name: "Copy HTTPS private key"
       command: "fs:copy"
+      sudo: true
       arguments:
           src: "!{{ item.https_private_key }}"
           dest: "/etc/ssl/private/{{ item.name }}.key"
@@ -103,6 +108,7 @@ tasks:
     -
       name: "Copy HTTPS certificate"
       command: "fs:copy"
+      sudo: true
       arguments:
           src: "!{{ item.https_certificate }}"
           dest: "/etc/ssl/certs/{{ item.name }}.crt.pem"
@@ -111,6 +117,7 @@ tasks:
     -
       name: "Create vhosts"
       command: "fs:copy"
+      sudo: true
       arguments:
           src: "!{{ mod_path }}/assets/vhost.conf.template"
           dest: "/etc/nginx/sites-available/{{ item.name }}.conf"
@@ -118,11 +125,13 @@ tasks:
     -
       name: "Enable vhosts"
       command: "nginx:ensite"
+      sudo: true
       arguments:
           site-name: "{{ item.name }}"
       with_items: nginx_vhosts
     -
       name: "Reload the Nginx service"
       command: "service:reload"
+      sudo: true
       arguments:
           name: "nginx"
