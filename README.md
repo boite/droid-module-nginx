@@ -5,19 +5,18 @@ information on Droid, please see [droidphp.com](http://droidphp.com).
 
 The steps involved are:-
 
-1. Update platform package lists.
-2. Install the nginx package.
-3. Write the configuration to `/etc/nginx/nginx.conf`.
-4. Write an upstream configuration file, for each virtual host, to
+1. Install the nginx package.
+2. Write the configuration to `/etc/nginx/nginx.conf`.
+3. Write an upstream configuration file, for each virtual host, to
    `/etc/nginx/conf.d/`.
-5. Write a certificate authority file, for client authentication, for each
+4. Write a certificate authority file, for client authentication, for each
    applicable virtual host, to `/etc/ssl/certs/`.
-6. Write a HTTPS private key file, for each applicable virtual host, to
+5. Write a HTTPS private key file, for each applicable virtual host, to
    `/etc/ssl/private/`.
-7. Write a virtual host configuration, for each virtual host, to
+6. Write a virtual host configuration, for each virtual host, to
    `/etc/nginx/sites-available/`.
-8. Enable each virtual host.
-9. Instruct Nginx to reload its configuration.
+7. Enable each virtual host.
+8. Instruct Nginx to reload its configuration.
 
 
 ## Assumptions
