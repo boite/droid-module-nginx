@@ -15,7 +15,7 @@ server {
     ssl_certificate /etc/ssl/certs/{{{ item.name }}}.crt.pem;
     ssl_certificate_key /etc/ssl/private/{{{ item.name }}}.key;
     proxy_set_header Host $host;
-    proxy_set_header HTTPS on;
+    proxy_set_header HTTPS https;
 {{/if}}
 
 {{#if item.auth_cacert}}
