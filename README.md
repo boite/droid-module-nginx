@@ -1,4 +1,4 @@
-# Droid Module: droid/nginx
+# Droid Module: nginx
 
 Setup NGINX as a load balancing, SSL terminating reverse proxy. For more
 information on Droid, please see [droidphp.com](http://droidphp.com).

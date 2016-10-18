@@ -1,7 +1,4 @@
----
-project:
-    name: "droid/nginx"
-    description: "Setup NGINX"
+description: "Setup NGINX"
 
 variables:
     nginx:
