@@ -93,7 +93,7 @@ tasks:
           src: "!{{ item.auth_cacert }}"
           dest: "/etc/ssl/certs/{{ item.name }}.cacert.pem"
       with_items: nginx_vhosts
-      with_items_filter: "item['auth_cacert']"
+      with_items_filter: "'auth_cacert' in item"
     -
       name: "Copy HTTPS private key"
       command: "fs:copy"
@@ -102,7 +102,7 @@ tasks:
           src: "!{{ item.https_private_key }}"
           dest: "/etc/ssl/private/{{ item.name }}.key"
       with_items: nginx_vhosts
-      with_items_filter: "item['https_private_key']"
+      with_items_filter: "'https_private_key' in item"
     -
       name: "Copy HTTPS certificate"
       command: "fs:copy"
@@ -111,7 +111,7 @@ tasks:
           src: "!{{ item.https_certificate }}"
           dest: "/etc/ssl/certs/{{ item.name }}.crt.pem"
       with_items: nginx_vhosts
-      with_items_filter: "item['https_certificate']"
+      with_items_filter: "'https_certificate' in item"
     -
       name: "Create vhosts"
       command: "fs:copy"
